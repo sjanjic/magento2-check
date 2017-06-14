@@ -1,67 +1,99 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body {
-            font-family: Verdana, Geneva, sans-serif;
-        }
-
-        h2 {
-            color: #444;
-        }
-
-        p.ok {
-            color: green;
-        }
-
-        p.fail {
-            color: red;
-        }
-    </style>
-</head>
-<body>
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 function result($value, $result)
 {
     if ($result) {
-        return '<p class="ok">' . $value . ': OK</p>';
+        return array('css' => 'success', 'note' => $value . ': OK');
     }
-    return '<p class="fail">' . $value . ': FAIL</p>';
+    return array('css' => 'danger', 'note' => $value . ': FAIL');
 }
 
-echo '<h2>Apache</h2>';
-echo '<p>Version: ' . apache_get_version() . '</p>';
-$requiredModules = array('mod_rewrite');
-$apacheModules = apache_get_modules();
-foreach ($requiredModules as $req) {
-    echo result($req, in_array($req, $apacheModules));
+function apacheModules()
+{
+    $results = array();
+    preg_match('/([\d]+\.[\d]+\.[\d]+)/', apache_get_version(), $version);
+    $results[0] = array('css' => 'danger', 'note' => 'Version: ' . $version[0]);
+    if (version_compare($version[0], '2.2') >= 0) {
+        $results[0] = array('css' => 'success', 'note' => 'Version: ' . $version[0]);
+    }
+    $requiredModules = array('mod_rewrite');
+    $apacheModules = apache_get_modules();
+    foreach ($requiredModules as $req) {
+        $results[] = result($req, in_array($req, $apacheModules));
+    }
+    return $results;
 }
 
-echo '<h2>PHP</h2>';
-echo '<p>Version: ' . phpversion() . '</p>';
-$requiredExtensions = array(
-    'curl',
-    'gd',
-    'intl',
-    'mbstring',
-    'mcrypt',
-    'openssl',
-    'PDO',
-    'SimpleXML',
-    'soap',
-    'xml',
-    'xsl',
-    'zip',
-    'json',
-    'iconv',
-    'Zend OPcache',
-    'xdebug',
-);
-$phpExtensions = get_loaded_extensions();
-foreach ($requiredExtensions as $req) {
-    echo result($req, in_array($req, $phpExtensions));
+function phpExtensions()
+{
+    $results = array();
+    preg_match('/([\d]+\.[\d]+\.[\d]+)/', phpversion(), $version);
+    $results[0] = array('css' => 'danger', 'note' => 'Version: ' . $version[0]);
+    if (version_compare($version[0], '7.0.18') >= 0) {
+        $results[0] = array('css' => 'success', 'note' => 'Version: ' . $version[0]);
+    }
+    $requiredExtensions = array(
+        'curl',
+        'gd',
+        'intl',
+        'mbstring',
+        'mcrypt',
+        'openssl',
+        'PDO',
+        'SimpleXML',
+        'soap',
+        'xml',
+        'xsl',
+        'zip',
+        'json',
+        'iconv',
+        'Zend OPcache',
+        'xdebug',
+    );
+    $phpExtensions = get_loaded_extensions();
+    foreach ($requiredExtensions as $req) {
+        $results[] = result($req, in_array($req, $phpExtensions));
+    }
+    return $results;
 }
+
+apacheModules();
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <h1>Magento 2 requirements check script</h1>
+    <div class="panel panel-default">
+        <div class="panel-heading">Apache</div>
+        <div class="panel-body">
+            <?php foreach (apacheModules() as $result): ?>
+                <div class="alert alert-<?php echo $result['css'] ?>" role="alert"><?php echo $result['note'] ?></div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">PHP</div>
+        <div class="panel-body">
+            <?php foreach (phpExtensions() as $result): ?>
+                <div class="alert alert-<?php echo $result['css'] ?>" role="alert"><?php echo $result['note'] ?></div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
 </body>
 </html>
