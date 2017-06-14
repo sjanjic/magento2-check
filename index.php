@@ -30,9 +30,12 @@ function phpExtensions()
 {
     $results = array();
     preg_match('/([\d]+\.[\d]+\.[\d]+)/', phpversion(), $version);
-    $results[0] = array('css' => 'danger', 'note' => 'Version: ' . $version[0]);
-    if (version_compare($version[0], '7.0.18') >= 0) {
-        $results[0] = array('css' => 'success', 'note' => 'Version: ' . $version[0]);
+    $ver = $version[0];
+    $results[0] = array('css' => 'danger', 'note' => 'Version: ' . $ver);
+    if ((version_compare($ver, '5.6.5', '>=') && version_compare($ver, '7.0.0', '<')) || version_compare($ver, '7.0.2',
+            '==') || version_compare($ver, '7.0.4', '==') || version_compare($ver, '7.0.6', '>=')
+    ) {
+        $results[0] = array('css' => 'success', 'note' => 'Version: ' . $ver);
     }
     $requiredExtensions = array(
         'curl',
