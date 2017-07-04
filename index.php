@@ -62,7 +62,19 @@ function phpExtensions()
     return $results;
 }
 
-apacheModules();
+function phpOptionalExtensions()
+{
+    $optionalExtensions = array(
+        'imagick',
+    );
+    $phpExtensions = get_loaded_extensions();
+    $results = array();
+    foreach ($optionalExtensions as $opt) {
+        $results[] = result($opt, in_array($opt, $phpExtensions));
+    }
+    return $results;
+}
+//apacheModules();
 ?>
 <!DOCTYPE html>
 <html>
@@ -93,6 +105,14 @@ apacheModules();
         <div class="panel-heading">PHP</div>
         <div class="panel-body">
             <?php foreach (phpExtensions() as $result): ?>
+                <div class="alert alert-<?php echo $result['css'] ?>" role="alert"><?php echo $result['note'] ?></div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Optional PHP Extension</div>
+        <div class="panel-body">
+            <?php foreach (phpOptionalExtensions() as $result): ?>
                 <div class="alert alert-<?php echo $result['css'] ?>" role="alert"><?php echo $result['note'] ?></div>
             <?php endforeach; ?>
         </div>
