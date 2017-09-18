@@ -104,6 +104,7 @@ function phpOptionalExtensions()
     <div class="panel panel-default">
         <div class="panel-heading">PHP</div>
         <div class="panel-body">
+            <div role="alert" class="alert alert-warning">Loaded php.ini file: <?php echo php_ini_loaded_file()?></div>
             <?php foreach (phpExtensions() as $result): ?>
                 <div class="alert alert-<?php echo $result['css'] ?>" role="alert"><?php echo $result['note'] ?></div>
             <?php endforeach; ?>
