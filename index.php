@@ -18,7 +18,7 @@ function apacheModules()
     if (version_compare($version[0], '2.2') >= 0) {
         $results[0] = array('css' => 'success', 'note' => 'Version: ' . $version[0]);
     }
-    $requiredModules = array('mod_rewrite');
+    $requiredModules = array('mod_rewrite','mod_expires');
     $apacheModules = apache_get_modules();
     foreach ($requiredModules as $req) {
         $results[] = result($req, in_array($req, $apacheModules));
